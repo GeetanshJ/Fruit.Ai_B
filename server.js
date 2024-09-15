@@ -3,7 +3,7 @@ const connectDB = require('./db');
 const Faq = require('./schema');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 app.use('/uploads', express.static('uploads'));
