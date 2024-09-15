@@ -8,24 +8,25 @@ require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
 connectDB();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
     origin: ["http://localhost:3000", "https://fruit-ai-1cw1.vercel.app"],
 }));
 
-
 app.use(
     "/api/uploadthing",
     createRouteHandler({
         router: uploadRouter,
-        config: { },
+        config: {},
     })
 );
 
 app.get("/", (req, res) => {
-    res.status(200).json({ message: "API is working!" });
+    res.send("API WORKING")
 });
 
 app.get("/faqs", async (req, res) => {
@@ -73,6 +74,10 @@ app.delete("/faqs/:id", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+});
+
+app.use((req, res, next) => {
+    res.send("Wrong Route Buddy!!!!");
 });
 
 app.listen(port, () => {
