@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 
 app.use(cors({
-    origin: "https://fruit-ai-1cw1.vercel.app/faqs",
+    origin: "https://fruit-ai-1cw1.vercel.app",
 }));
 
 
