@@ -1,27 +1,34 @@
-const express = require('express');
-const connectDB = require('./db');
-const Faq = require('./schema');
-const cors = require('cors');
+const express = require("express");
+const connectDB = require("./db");
+const Faq = require("./schema");
+const cors = require("cors");
+const { createRouteHandler } = require("uploadthing/express");
+const uploadRouter = require("./uploadthing");
+require("dotenv").config();
+
 const app = express();
 const port = process.env.PORT || 5000;
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-app.use('/uploads', express.static('uploads'));
-require('dotenv').config();
-
-
 connectDB();
 app.use(express.json());
+
 app.use(cors({
-    origin: 'https://fruit-ai-1cw1.vercel.app/'
+    origin: "https://fruit-ai-1cw1.vercel.app/faqs",
 }));
+
+
+app.use(
+    "/api/uploadthing",
+    createRouteHandler({
+        router: uploadRouter,
+        config: { },
+    })
+);
 
 app.get("/", (req, res) => {
     res.status(200).json({ message: "API is working!" });
 });
 
-
-app.get('/faqs', async (req, res) => {
+app.get("/faqs", async (req, res) => {
     try {
         const faqs = await Faq.find();
         res.json(faqs);
@@ -30,14 +37,17 @@ app.get('/faqs', async (req, res) => {
     }
 });
 
-
-
-app.post('/faqs', upload.single('image'), async (req, res) => {
-    const { question, answer } = req.body;
-    const image = req.file ? req.file.filename : null;
-
+app.post("/faqs", async (req, res) => {
     try {
-        const newFaq = new Faq({ question, answer, image });
+        const { image, question, answer } = req.body;
+        let imageUrl = null;
+
+        if (image) {
+            const uploadResponse = await uploadRouter.imageUploader.upload({ file: image });
+            imageUrl = uploadResponse.url;
+        }
+
+        const newFaq = new Faq({ question, answer, image: imageUrl });
         const savedFaq = await newFaq.save();
         res.status(201).json(savedFaq);
     } catch (error) {
@@ -45,26 +55,25 @@ app.post('/faqs', upload.single('image'), async (req, res) => {
     }
 });
 
-app.put('/faqs/:id', async (req, res) => {
+app.put("/faqs/:id", async (req, res) => {
     try {
-        const updatedFaq = await Faq.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedFaq = await Faq.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+        });
         res.json(updatedFaq);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-app.delete('/faqs/:id', async (req, res) => {
+app.delete("/faqs/:id", async (req, res) => {
     try {
         await Faq.findByIdAndDelete(req.params.id);
-        res.json({ message: 'FAQ deleted' });
+        res.json({ message: "FAQ deleted" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
-
-
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
