@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const Faq = require('./schema');
 require('dotenv').config();
-
+const MongoDB = require("./db.js")
 const app = express();
 const port = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+MongoDB();
 
 app.use(express.json());
 app.use(cors({
@@ -21,10 +21,16 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + '-' + file.originalname);
     }
 });
+
+
 const upload = multer({ storage });
+
+
 app.get("/",(req,res) => {
     res.send("Hi!! Welcome to Backend of Fruit.Ai")
 })
+
+
 app.get("/faqs", async (req, res) => {
     try {
         const faqs = await Faq.find();
@@ -37,6 +43,7 @@ app.get("/faqs", async (req, res) => {
 app.post("/faqs", upload.single('image'), async (req, res) => {
     try {
         const { question, answer } = req.body;
+        console.log(req.body);
         const image = req.file ? req.file.path : null;
         const newFaq = new Faq({ question, answer, image });
         const savedFaq = await newFaq.save();
