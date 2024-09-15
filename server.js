@@ -7,6 +7,7 @@ const port = process.env.PORT || 5000;
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 app.use('/uploads', express.static('uploads'));
+require('dotenv').config();
 
 
 connectDB();
