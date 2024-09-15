@@ -73,6 +73,20 @@ app.delete("/faqs/:id", async (req, res) => {
     }
 });
 
+
+app.delete("/faqs/:id", async (req, res) => {
+    try {
+        await Faq.findByIdAndDelete(req.params.id);
+        res.json({ message: 'FAQ deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete FAQ' });
+    }
+});
+
+app.use((req, res) => {
+    res.send("Wrong Route !!!!");
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
