@@ -22,7 +22,9 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
-
+app.get("/",(req,res) => {
+    res.send("Hi!! Welcome to Backend of Fruit.Ai")
+})
 app.get("/faqs", async (req, res) => {
     try {
         const faqs = await Faq.find();
