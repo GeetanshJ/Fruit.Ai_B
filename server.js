@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 
 app.use(cors({
-    origin: "https://fruit-ai-1cw1.vercel.app",
+    origin: "https://ae55-2405-201-5803-48bc-29b1-bb25-a2e-d8e.ngrok-free.app",
 }));
 
 
