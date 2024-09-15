@@ -12,7 +12,10 @@ require('dotenv').config();
 
 connectDB();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://fruit-ai-1cw1.vercel.app/'
+}));
+
 app.get("/", (req, res) => {
     res.status(200).json({ message: "API is working!" });
 });
